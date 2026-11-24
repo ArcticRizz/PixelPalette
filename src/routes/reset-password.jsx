@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ResetPasswordPage } from "@/components/auth/ResetPasswordPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/reset-password")({
-  ssr: false,
-  component: ResetPasswordPage,
+  beforeLoad: () => { throw redirect({ to: "/profiles", replace: true }); },
 });

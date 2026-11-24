@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Images, LogOut, Plus } from "lucide-react";
+import { Images, UserRound, Plus } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 
 const MARK = ["#C4633B", "#E0A33F", "#7C8F7B", "#2F4F6B", "#E9DFC6", "#8A6A3A", "#F0B9A0", "#3F76B8", "#C9B48A"];
@@ -19,7 +19,7 @@ export function LogoMark() {
 }
 
 export default function SiteHeader() {
-  const { user, isAuthenticated, isLoadingAuth, navigateToLogin, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
@@ -39,26 +39,11 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1.5">
-          {!isLoadingAuth && !isAuthenticated && (
-            <button
-              type="button"
-              onClick={() => navigateToLogin()}
-              className="rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Sign in
-            </button>
-          )}
-          {!isLoadingAuth && isAuthenticated && (
-            <button
-              type="button"
-              onClick={() => logout()}
-              title={user?.email || "Sign out"}
-              className="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Sign out</span>
-            </button>
-          )}
+          <Link to="/profiles" title="Profiles & backups" className="inline-flex max-w-40 items-center gap-1.5 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+            <UserRound className="h-4 w-4 shrink-0" />
+            <span className="hidden truncate sm:inline">{user.full_name}</span>
+            <span className="sr-only">Profiles & backups</span>
+          </Link>
           <Link
             to="/creations"
             title="My creations"

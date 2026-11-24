@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { artworkStore } from "@/lib/localStore";
 import { findWork } from "@/data/paintings/catalog";
 import { buildPainting } from "@/lib/museumPaintings";
 import { loadFullGrid } from "@/lib/mapStore";
@@ -41,7 +41,7 @@ function StudioPage() {
       }
 
       try {
-        const record = await base44.entities.Artwork.get(artworkId);
+        const record = await artworkStore.get(artworkId);
         if (!alive) return;
         const grid = await loadFullGrid(record);
         if (!alive) return;

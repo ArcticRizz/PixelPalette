@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ImagePlus, Loader2, Palette as PaletteIcon, Play, Save, X } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { artworkStore } from "@/lib/localStore";
 import { useAuth } from "@/lib/AuthContext";
 import PixelCover from "@/components/PixelCover";
 import { imageToGrid } from "@/lib/quantize";
 import { storeGrid } from "@/lib/mapStore";
-import { rememberCreation } from "@/lib/progressStore";
 
 const difficultyFor = (colors) => (colors <= 8 ? "easy" : colors <= 14 ? "medium" : "hard");
 
@@ -76,7 +75,7 @@ export default function ImageToGrid() {
     setSaving(true);
     try {
       const stored = await storeGrid(result.grid);
-      const created = await base44.entities.Artwork.create({
+      const created = await artworkStore.create({
         title: title.trim() || "Untitled study",
         artist: user?.full_name || "Studio guest",
         author_name: user?.full_name || "Studio guest",
@@ -87,13 +86,12 @@ export default function ImageToGrid() {
         ...stored,
         is_featured: false,
       });
-      rememberCreation(created.id);
       navigate({
         to: mode === "play" ? "/studio/$artworkId" : "/creations",
         params: mode === "play" ? { artworkId: created.id } : undefined,
       });
-    } catch {
-      toast.error("Could not save this map. Please try again.");
+    } catch (error) {
+      toast.error(error.message || "Could not save this map. Please try again.");
     } finally {
       setSaving(false);
     }

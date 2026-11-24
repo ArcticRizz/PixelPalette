@@ -1,18 +1,18 @@
 {
-  "name": "base44-tanstack-app",
+  "name": "pixelpalette",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test tests/*.test.js",
+    "start": "vite --open"
   },
   "dependencies": {
-    "@base44/sdk": "^0.8.63",
-    "@base44/vite-plugin": "^1.0.53",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.9.1",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -44,13 +44,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@stripe/react-stripe-js": "^3.10.0",
     "@stripe/stripe-js": "^5.2.0",
-    "@tanstack/ai": "^0.54.0",
-    "@tanstack/ai-openai": "^0.22.6",
-    "@tanstack/ai-react": "^0.24.1",
-    "@tanstack/react-query": "^5.84.1",
-    "@tanstack/react-router": "^1.170.0",
-    "@tanstack/react-router-ssr-query": "1.167.3",
-    "@tanstack/react-start": "^1.168.60",
+    "@tanstack/react-router": "1.170.46",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -83,7 +77,6 @@
     "zod": "~4.6.7"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.54.6",
     "@eslint/js": "^9.19.0",
     "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "^10.4.20",
@@ -93,9 +86,13 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "vite": "^8.2.4",
-    "wrangler": "^4.130.0"
+    "@tanstack/router-plugin": "1.169.0",
+    "fake-indexeddb": "^6.2.4"
   },
   "overrides": {
     "undici": "7.30.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

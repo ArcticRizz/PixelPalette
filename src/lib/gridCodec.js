@@ -1,16 +1,10 @@
-// Big maps cannot live in a database record as a 2D array of numbers: a 256x256
-// grid is over 800 KB and records are capped at 100 KB, with a per-field cap too.
-// Maps up to 128 squares are stored as one base-36 character per square; larger
-// maps keep a small inline preview and their full grid in a private file.
+// Compact, portable grids for local artwork and backups.
 
 const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
 const VALUES = new Map([...ALPHABET].map((char, index) => [char, index]));
 
 /** Above this size a map is stored compactly rather than as a 2D array. */
 export const COMPACT_ABOVE = 64;
-
-/** Above this size the full grid moves to a private file. */
-export const FILE_ABOVE = 128;
 
 /** The most colours a compact map can hold (base-36 digits). */
 export const MAX_COLORS = 35;

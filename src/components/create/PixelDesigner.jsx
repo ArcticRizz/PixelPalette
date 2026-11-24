@@ -2,9 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Eraser, Loader2, Play, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { artworkStore } from "@/lib/localStore";
 import { useAuth } from "@/lib/AuthContext";
-import { rememberCreation } from "@/lib/progressStore";
 import { MAX_COLORS } from "@/lib/gridCodec";
 import { storeGrid } from "@/lib/mapStore";
 import DesignerCanvas from "@/components/create/DesignerCanvas";
@@ -137,7 +136,7 @@ export default function PixelDesigner() {
       }
 
       const stored = await storeGrid(grid);
-      const created = await base44.entities.Artwork.create({
+      const created = await artworkStore.create({
         title: title.trim() || "Drawn study",
         artist: user?.full_name || "Studio guest",
         author_name: user?.full_name || "Studio guest",
@@ -148,10 +147,9 @@ export default function PixelDesigner() {
         ...stored,
         is_featured: false,
       });
-      rememberCreation(created.id);
       navigate({ to: "/studio/$artworkId", params: { artworkId: created.id } });
-    } catch {
-      toast.error("Could not save this map. Please try again.");
+    } catch (error) {
+      toast.error(error.message || "Could not save this map. Please try again.");
     } finally {
       setSaving(false);
     }

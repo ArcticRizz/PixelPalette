@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { MfaPage } from "@/components/auth/MfaPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/mfa")({
-  ssr: false,
-  component: MfaPage,
+  beforeLoad: () => { throw redirect({ to: "/profiles", replace: true }); },
 });

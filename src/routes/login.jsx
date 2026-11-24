@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LoginPage } from "@/components/auth/LoginPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/login")({
-  ssr: false,
-  component: LoginPage,
+  beforeLoad: () => { throw redirect({ to: "/profiles", replace: true }); },
 });

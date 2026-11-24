@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { computeStats, flattenGrid, remainingByColor } from "@/lib/pixel";
 import { loadProgress, saveProgress } from "@/lib/progressStore";
+import { useAuth } from "@/lib/AuthContext";
+import { toast } from "sonner";
 
 export default function useStudioEngine(artwork) {
+  const { user } = useAuth();
   const size = artwork?.grid_size || 24;
   const target = useMemo(() => flattenGrid(artwork?.target_grid), [artwork]);
   const palette = artwork?.palette || [];
@@ -27,20 +30,31 @@ export default function useStudioEngine(artwork) {
   const stats = useMemo(() => computeStats(target, progress), [target, progress]);
   const remaining = useMemo(() => remainingByColor(target, progress), [target, progress]);
 
-  // autosave, debounced
-  useEffect(() => {
-    if (!id) return undefined;
-    const timer = setTimeout(() => saveProgress(id, progress, stats.percent), 350);
-    return () => clearTimeout(timer);
-  }, [progress, id, stats.percent]);
+  const percentRef = useRef(stats.percent);
+  percentRef.current = stats.percent;
+  const persist = useCallback(() => {
+    if (!id) return;
+    saveProgress(id, progressRef.current, percentRef.current, user.id).catch(() => {
+      toast.error("Your last strokes could not be saved. Free some browser storage, then export a backup.", { id: "painting-save-error" });
+    });
+  }, [id, user.id]);
 
-  useEffect(
-    () => () => {
-      if (id) saveProgress(id, progressRef.current, stats.percent);
+  useEffect(() => {
+    const timer = setTimeout(persist, 150);
+    return () => clearTimeout(timer);
+  }, [progress, persist]);
+
+  useEffect(() => {
+    const onHidden = () => { if (document.visibilityState === "hidden") persist(); };
+    document.addEventListener("visibilitychange", onHidden);
+    window.addEventListener("pagehide", persist);
+    return () => {
+      persist();
+      document.removeEventListener("visibilitychange", onHidden);
+      window.removeEventListener("pagehide", persist);
       if (shakeTimer.current) clearTimeout(shakeTimer.current);
-    },
-    [id]
-  );
+    };
+  }, [persist]);
 
   const flashWrong = useCallback((index) => {
     setShakeCell(index);

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImagePlus, PencilRuler, Sparkles } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { artworkStore } from "@/lib/localStore";
 import { useAuth } from "@/lib/AuthContext";
 import ArtworkCard from "@/components/gallery/ArtworkCard";
-import { getMyCreationIds, loadProgressIndex } from "@/lib/progressStore";
+import { loadProgressIndex } from "@/lib/progressStore";
 
 export const Route = createFileRoute("/_site/creations")({
   ssr: false,
@@ -20,58 +20,29 @@ const SOURCE_LABEL = {
 };
 
 function CreationsPage() {
-  const { user, isAuthenticated, isLoadingAuth } = useAuth();
+  const { user } = useAuth();
+  const [error, setError] = useState(null);
   const [items, setItems] = useState(null);
   const [progress, setProgress] = useState({});
 
   useEffect(() => {
-    if (isLoadingAuth) return undefined;
     let alive = true;
     setProgress(loadProgressIndex());
 
     const load = async () => {
-      const collected = [];
-      const seen = new Set();
-
-      if (isAuthenticated && user?.id) {
-        try {
-          const res = await base44.entities.Artwork.filter(
-            { created_by_id: user.id },
-            { sort: "-created_date", limit: 60 }
-          );
-          const list = res?.items ?? res ?? [];
-          list.forEach((item) => {
-            if (item?.id && !seen.has(item.id)) {
-              seen.add(item.id);
-              collected.push(item);
-            }
-          });
-        } catch {
-          /* fall through to locally remembered maps */
-        }
+      try {
+        const records = await artworkStore.list();
+        if (alive) { setItems(records); setError(null); }
+      } catch (error) {
+        if (alive) { setItems([]); setError(error.message || "Could not load your creations."); }
       }
-
-      const localIds = getMyCreationIds().filter((id) => !seen.has(id));
-      if (localIds.length) {
-        const fetched = await Promise.all(
-          localIds.slice(0, 40).map((id) => base44.entities.Artwork.get(id).catch(() => null))
-        );
-        fetched.forEach((item) => {
-          if (item?.id && !seen.has(item.id)) {
-            seen.add(item.id);
-            collected.push(item);
-          }
-        });
-      }
-
-      if (alive) setItems(collected);
     };
 
     load();
     return () => {
       alive = false;
     };
-  }, [isAuthenticated, isLoadingAuth, user?.id]);
+  }, [user.id]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-12">
@@ -101,11 +72,10 @@ function CreationsPage() {
         </div>
       </header>
 
-      {!isLoadingAuth && !isAuthenticated && (
-        <p className="mt-5 rounded-full border border-border/70 bg-white/60 px-4 py-2.5 text-xs text-muted-foreground">
-          You are browsing as a guest — your maps stay saved on this device. Sign in to keep them everywhere.
-        </p>
-      )}
+      <p className="mt-5 rounded-2xl border border-border/70 bg-white/60 px-4 py-2.5 text-xs text-muted-foreground">
+        Saved in {user.full_name} on this browser. <Link to="/profiles" className="underline">Profiles & backups</Link>
+      </p>
+      {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
 
       {items === null ? (
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
