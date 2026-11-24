@@ -14,7 +14,8 @@ export default function DesignerCanvas({ size, cells, onPaint }) {
   const paintCell = (ctx, index) => {
     const x = index % size;
     const y = (index - x) / size;
-    const gap = cell >= 5 ? 1 : 0;
+    // Keep cell boundaries visible even at 256 × 256 (two pixels per cell).
+    const gap = 1;
     ctx.fillStyle = cells[index] || EMPTY;
     ctx.fillRect(x * cell, y * cell, cell - gap, cell - gap);
   };

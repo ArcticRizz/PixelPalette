@@ -56,7 +56,8 @@ export default function PixelCanvasGrid({
     const p = progress[index] || 0;
     const correct = p > 0 && p === t;
     const wrong = p > 0 && p !== t;
-    const gap = complete || cell < 6 ? 0 : 1;
+    // Small cells still need boundaries; only the finished artwork hides them.
+    const gap = complete ? 0 : 1;
 
     let fill = "#ffffff";
     if (correct) fill = palette[t - 1] || "#ffffff";
