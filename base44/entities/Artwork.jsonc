@@ -1,0 +1,112 @@
+{
+  "name": "Artwork",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the painting or map"
+    },
+    "artist": {
+      "type": "string",
+      "description": "Painter or creator name shown under the title"
+    },
+    "year": {
+      "type": "string",
+      "description": "Year or period of the original work"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short evocative description"
+    },
+    "slug": {
+      "type": "string",
+      "description": "Stable identifier for the built-in classics"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "featured",
+        "custom_image",
+        "custom_drawn"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "pink"
+      ],
+      "description": "Where the map came from"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "description": "Derived from grid size and number of colours"
+    },
+    "grid_size": {
+      "type": "number",
+      "description": "Grid is grid_size x grid_size squares"
+    },
+    "palette": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Hex colours; index + 1 is the number printed in the square"
+    },
+    "target_grid": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      },
+      "description": "2D array of target colour numbers (0 = blank). A small preview when the full map lives in a compact field or file"
+    },
+    "target_compact": {
+      "type": "string",
+      "description": "Maps up to 128 squares: one base-36 character per square, row by row"
+    },
+    "map_file": {
+      "type": "string",
+      "description": "Private file URI holding the full grid of maps larger than 128 squares"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the person who made the map"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Part of the curated collection"
+    },
+    "sort_order": {
+      "type": "number",
+      "description": "Order in the curated collection"
+    }
+  },
+  "required": [
+    "title",
+    "grid_size",
+    "palette",
+    "target_grid"
+  ],
+  "rls": {
+    "read": {},
+    "create": {},
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
